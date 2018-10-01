@@ -7,17 +7,19 @@
     tools:context=".MainActivity">
 
     <EditText
+        android:id="@+id/edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textMultiLine|textCapSentences|textAutoCorrect" />
 
-    <Button
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="30dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginRight="20dp"
-        android:text="Save"/>
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/ic_save_black_24dp"/>
 
 </RelativeLayout>
