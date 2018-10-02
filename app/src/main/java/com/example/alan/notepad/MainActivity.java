@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,7 +40,11 @@ public class MainActivity extends AppCompatActivity {
                             .show();
                     return;
                 }
-                File extStore = Environment.getExternalStorageDirectory();
+                File extStore = new File(Environment.getExternalStorageDirectory()+File
+                        .separator+"Notes");
+                if (!extStore.exists()) {
+                    extStore.mkdirs();
+                }
                 String path = extStore.getAbsolutePath() + "/" + t;
                 String data = content.getText().toString();
                 try {
