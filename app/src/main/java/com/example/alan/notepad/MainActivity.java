@@ -2,20 +2,26 @@ package com.example.alan.notepad;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText edittext;
+    EditText content;
+    EditText title;
     Intent allNotes;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +32,29 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Save("a.txt");
+                title = findViewById(R.id.title);
+                content = findViewById(R.id.content);
+                String t = title.getText().toString() + ".txt";
+                if (t.equals(".txt")) {
+                    Toast.makeText(getApplicationContext(), "No Blank Title Please!", Toast
+                            .LENGTH_SHORT)
+                            .show();
+                    return;
+                }
+                File extStore = Environment.getExternalStorageDirectory();
+                String path = extStore.getAbsolutePath() + "/" + t;
+                String data = content.getText().toString();
+                try {
+                    File myFile = new File(path);
+                    myFile.createNewFile();
+                    FileOutputStream out = new FileOutputStream(myFile);
+                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(out);
+                    outputStreamWriter.append(data);
+                    outputStreamWriter.close();
+                    out.close();
+                    Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
+                }
+                catch (Exception e) {}
             }
         });
     }
@@ -42,18 +70,5 @@ public class MainActivity extends AppCompatActivity {
         allNotes = new Intent(MainActivity.this, AllNotes.class);
         startActivity(allNotes);
         return false;
-    }
-
-    public void Save(String fileName) {
-        edittext = findViewById(R.id.edittext);
-        try {
-            OutputStreamWriter out = new OutputStreamWriter(openFileOutput(fileName, 0));
-            out.write(edittext.getText().toString());
-            out.close();
-            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-        }
-        catch (Throwable t) {
-            Toast.makeText(this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
-        }
     }
 }
