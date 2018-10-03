@@ -27,9 +27,6 @@ public class NotesAdapter extends ArrayAdapter<Note> {
         TextView title = listItemView.findViewById (R.id.title);
         title.setText (currentNote.getTitle());
 
-        TextView content = listItemView.findViewById (R.id.content);
-        content.setText (currentNote.getContent());
-
         return listItemView;
     }
 }

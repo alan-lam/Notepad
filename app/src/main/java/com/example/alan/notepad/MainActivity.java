@@ -26,11 +26,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        title = findViewById(R.id.title);
+        content = findViewById(R.id.content);
+
+        Intent i = getIntent();
+        if (i.hasExtra("Note")) {
+            Note n = i.getExtras().getParcelable("Note");
+            String t = n.getTitle();
+            if (t.indexOf(".") > 0)
+                t = t.substring(0, t.lastIndexOf("."));
+            title.setText(t);
+            content.setText(n.getContent());
+        }
+
         FloatingActionButton fab = findViewById(R.id.save);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                title = findViewById(R.id.title);
                 String t = title.getText().toString() + ".txt";
                 if (t.equals(".txt")) {
                     Toast.makeText(getApplicationContext(), "No Blank Title Please!", Toast
@@ -38,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
                             .show();
                     return;
                 }
-                content = findViewById(R.id.content);
                 File extStore = new File(Environment.getExternalStorageDirectory()+File
                         .separator+"Notes");
                 if (!extStore.exists()) {
