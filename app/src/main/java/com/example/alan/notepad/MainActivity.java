@@ -1,9 +1,13 @@
 package com.example.alan.notepad;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,9 +50,11 @@ public class MainActivity extends AppCompatActivity {
                 String t = title.getText().toString() + ".txt";
                 if (t.equals(".txt")) {
                     Toast.makeText(getApplicationContext(), "No Blank Title Please!", Toast
-                            .LENGTH_SHORT)
-                            .show();
+                            .LENGTH_SHORT).show();
                     return;
+                }
+                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 }
                 File extStore = new File(Environment.getExternalStorageDirectory()+File
                         .separator+"Notes");
@@ -80,8 +86,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        allNotes = new Intent(MainActivity.this, AllNotes.class);
-        startActivity(allNotes);
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
+        else {
+            allNotes = new Intent(MainActivity.this, AllNotes.class);
+            startActivity(allNotes);
+        }
         return false;
     }
 }
