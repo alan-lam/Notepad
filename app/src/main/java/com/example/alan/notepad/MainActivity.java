@@ -37,8 +37,9 @@ public class MainActivity extends AppCompatActivity {
         if (i.hasExtra("Note")) {
             Note n = i.getExtras().getParcelable("Note");
             String t = n.getTitle();
-            if (t.indexOf(".") > 0)
+            if (t.indexOf(".") > 0) {
                 t = t.substring(0, t.lastIndexOf("."));
+            }
             title.setText(t);
             content.setText(n.getContent());
         }
@@ -49,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String t = title.getText().toString() + ".txt";
                 if (t.equals(".txt")) {
-                    Toast.makeText(getApplicationContext(), "No Blank Title Please!", Toast
-                            .LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "No Blank Title Please!", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -73,7 +73,9 @@ public class MainActivity extends AppCompatActivity {
                     out.close();
                     Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
                 }
-                catch (Exception e) {}
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -90,8 +92,17 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
         else {
-            allNotes = new Intent(MainActivity.this, AllNotes.class);
-            startActivity(allNotes);
+            if (item.getItemId() == R.id.all_notes) {
+                allNotes = new Intent(MainActivity.this, AllNotes.class);
+                startActivity(allNotes);
+            }
+            else {
+                String path = Environment.getExternalStorageDirectory().toString() +"/Notes/"+title.getText().toString()+".txt";
+                File file = new File(path);
+                file.delete();
+                title.setText("");
+                content.setText("");
+            }
         }
         return false;
     }
