@@ -28,6 +28,7 @@ public class PasswordDialog extends Dialog implements android.view.View.OnClickL
             public void onClick(View view) {
                 String password = passwordEditText.getText().toString();
                 mDialogResult.getResult(password);
+                passwordEditText.setText(""); // Clear text field when wrong password is entered
                 dismiss();
             }
         });

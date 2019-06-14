@@ -21,6 +21,12 @@
             android:label="All Notes"
             android:parentActivityName=".MainActivity">
         </activity>
+        <activity
+            android:name=".ChangePassword"
+            android:label="Change Password"
+            android:parentActivityName=".AllNotes">
+
+        </activity>
     </application>
 
 </manifest>

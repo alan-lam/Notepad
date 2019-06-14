@@ -16,18 +16,14 @@ import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
 
-    SharedPreferences notesSharedPreferences;
-    EditText titleEditText;
-    EditText contentEditText;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        notesSharedPreferences = getSharedPreferences("notes", MODE_PRIVATE);
-        titleEditText = findViewById(R.id.title);
-        contentEditText = findViewById(R.id.content);
+        final SharedPreferences notesSharedPreferences = getSharedPreferences("notes", MODE_PRIVATE);
+        final EditText titleEditText = findViewById(R.id.title);
+        final EditText contentEditText = findViewById(R.id.content);
 
         /* Load note from all notes list */
         Intent i = getIntent();

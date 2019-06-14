@@ -24,11 +24,14 @@ public class AllNotes extends AppCompatActivity {
     ListView listView;
     SharedPreferences notesSharedPreferences;
     SharedPreferences passwordSharedPreferences;
+    PasswordDialog d;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.all_notes);
+
+        d = new PasswordDialog(AllNotes.this);
 
         notesSharedPreferences = getSharedPreferences("notes", MODE_PRIVATE);
         passwordSharedPreferences = getSharedPreferences("password", MODE_PRIVATE);
@@ -45,7 +48,6 @@ public class AllNotes extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final Note n = notesArrayList.get(position);
                 if (n.isLocked()) {
-                    PasswordDialog d = new PasswordDialog(AllNotes.this);
                     d.setDialogResult(new PasswordDialog.DialogResult() {
                         @Override
                         public void getResult(String result) {
@@ -92,32 +94,82 @@ public class AllNotes extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        Note n = notesArrayList.get(info.position);
+        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-        SharedPreferences.Editor prefsEditor = notesSharedPreferences.edit();
+        final Note n = notesArrayList.get(info.position);
+
+        final SharedPreferences.Editor prefsEditor = notesSharedPreferences.edit();
 
         if (item.getTitle().equals("Delete")) {
             if (passwordSharedPreferences.getAll().size() > 0) {
-                /* TODO: check password before delete */
-            }
-            prefsEditor.remove(n.getTitle());
-            prefsEditor.apply();
+                d.setDialogResult(new PasswordDialog.DialogResult() {
+                    @Override
+                    public void getResult(String result) {
+                        String key = passwordSharedPreferences.getString("password", "");
+                        if (key.equals(result)) {
+                            prefsEditor.remove(n.getTitle());
+                            prefsEditor.apply();
 
-            notesArrayList.remove(info.position);
-            listView.setAdapter(notesAdapter);
+                            notesArrayList.remove(info.position);
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), "Wrong Password!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                d.show();
+            }
+            else {
+                prefsEditor.remove(n.getTitle());
+                prefsEditor.apply();
+
+                notesArrayList.remove(info.position);
+            }
         }
         else if (item.getTitle().equals("Lock")) {
-            n.setLocked(true);
+            if (passwordSharedPreferences.getAll().size() > 0) {
+                d.setDialogResult(new PasswordDialog.DialogResult() {
+                    @Override
+                    public void getResult(String result) {
+                        String key = passwordSharedPreferences.getString("password", "");
+                        if (key.equals(result)) {
+                            n.setLocked(true);
 
-            Gson gson = new Gson();
-            String json = gson.toJson(n);
-            prefsEditor.putString(n.getTitle(), json);
-            prefsEditor.apply();
+                            Gson gson = new Gson();
+                            String json = gson.toJson(n);
+                            prefsEditor.putString(n.getTitle(), json);
+                            prefsEditor.apply();
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), "Wrong Password!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
         }
         else {
-            /* TODO: unlock */
+            if (passwordSharedPreferences.getAll().size() > 0) {
+                d.setDialogResult(new PasswordDialog.DialogResult() {
+                    @Override
+                    public void getResult(String result) {
+                        String key = passwordSharedPreferences.getString("password", "");
+                        if (key.equals(result)) {
+                            n.setLocked(false);
+
+                            Gson gson = new Gson();
+                            String json = gson.toJson(n);
+                            prefsEditor.putString(n.getTitle(), json);
+                            prefsEditor.apply();
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), "Wrong Password!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                d.show();
+            }
         }
+        listView.setAdapter(notesAdapter);
         return false;
     }
 
@@ -130,20 +182,31 @@ public class AllNotes extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (passwordSharedPreferences.getAll().size() > 0) {
-            /* TODO: change password activity */
-        }
-        else {
-            PasswordDialog d = new PasswordDialog(AllNotes.this);
             d.setDialogResult(new PasswordDialog.DialogResult() {
                 @Override
                 public void getResult(String result) {
-                    SharedPreferences.Editor prefsEditor = passwordSharedPreferences.edit();
-                    prefsEditor.putString("password", result);
-                    prefsEditor.apply();
+                    String key = passwordSharedPreferences.getString("password", "");
+                    if (key.equals(result)) {
+                        Intent i = new Intent(AllNotes.this, ChangePassword.class);
+                        startActivity(i);
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "Wrong Password!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
             d.show();
         }
+        else {
+            Intent i = new Intent(AllNotes.this, ChangePassword.class);
+            startActivity(i);
+        }
         return false;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        d.dismiss(); // Fix Activity Window Leak
     }
 }
