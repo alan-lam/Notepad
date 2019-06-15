@@ -145,6 +145,7 @@ public class AllNotes extends AppCompatActivity {
                         }
                     }
                 });
+                d.show();
             }
         }
         else {

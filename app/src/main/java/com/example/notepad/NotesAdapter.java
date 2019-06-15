@@ -28,12 +28,12 @@ public class NotesAdapter extends ArrayAdapter<Note> {
         TextView title = listItemView.findViewById(R.id.title);
         title.setText(currentNote.getTitle());
 
-        ImageView lockImageView = listItemView.findViewById(R.id.lock_icon);
-
         if (currentNote.isLocked()) {
+            ImageView lockImageView = listItemView.findViewById(R.id.lock_icon);
             lockImageView.setImageResource(R.drawable.ic_lock_black_24dp);
         }
         else {
+            ImageView lockImageView = listItemView.findViewById(R.id.lock_icon);
             lockImageView.setImageDrawable(null);
         }
 
