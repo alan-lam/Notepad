@@ -13,3 +13,4 @@ APK available at the ["release"](https://github.com/alan-lam/Notepad/releases) s
 ## Concepts
 - Passing Result from Dialog to Activity
 - SharedPreferences
+- Context Menu
