@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         final EditText contentEditText = findViewById(R.id.content);
 
         /* Load note from all notes list */
-        Intent i = getIntent();
+        final Intent i = getIntent();
         if (i.hasExtra("Note")) {
             Note n = i.getExtras().getParcelable("Note");
             titleEditText.setText(n.getTitle());
@@ -40,8 +40,22 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String title = titleEditText.getText().toString();
                 String content = contentEditText.getText().toString();
-                final Note n = new Note(title, content);
+
                 SharedPreferences.Editor prefsEditor = notesSharedPreferences.edit();
+
+                final Note n;
+                if (i.hasExtra("Note")) {
+                    n = i.getExtras().getParcelable("Note");
+                    if (!n.getTitle().equals(title)) {
+                        prefsEditor.remove(n.getTitle());
+                    }
+                    n.setTitle(title);
+                    n.setContent(content);
+                }
+                else {
+                    n = new Note(title, content);
+                }
+
                 Gson gson = new Gson();
                 String json = gson.toJson(n);
                 prefsEditor.putString(n.getTitle(), json);

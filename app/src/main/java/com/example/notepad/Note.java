@@ -26,6 +26,10 @@ public class Note implements Parcelable {
         return this.isLocked;
     }
 
+    public void setTitle(String title) { this.title = title; }
+
+    public void setContent(String content) { this.content = content; }
+
     public void setLocked(boolean status) {
         this.isLocked = status;
     }
