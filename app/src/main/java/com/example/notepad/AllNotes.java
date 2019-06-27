@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Scanner;
 
 public class AllNotes extends AppCompatActivity {
 
@@ -204,11 +205,10 @@ public class AllNotes extends AppCompatActivity {
                             Intent i = new Intent(AllNotes.this, ChangePassword.class);
                             startActivity(i);
                         }
-                        /* TODO */
                         else if (item.getTitle().equals("Export to local storage")) {
                             if (isExternalStorageWritable() && isExternalStorageReadable()) {
                                 /* ask user for storage write permission */
-                                if (ContextCompat.checkSelfPermission(getApplicationContext()   , Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                                     ActivityCompat.requestPermissions(AllNotes.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                                 }
                                 else {
@@ -221,15 +221,26 @@ public class AllNotes extends AppCompatActivity {
                                 }
                             }
                         }
-                        /* TODO */
                         else if (item.getTitle().equals("Import from local storage")){
                             if (isExternalStorageReadable()) {
-                                Toast.makeText(getApplicationContext(), "Can Read", Toast.LENGTH_SHORT).show();
+                                /* ask user for storage read permission */
+                                if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                    ActivityCompat.requestPermissions(AllNotes.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
+                                }
+                                else {
+                                    File dir = new File(Environment.getExternalStorageDirectory(), "Notepad");
+                                    if (!dir.exists()) {
+                                        Toast.makeText(getApplicationContext(), "File Doesn't Exist. See Instructions", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else {
+                                        File file = new File(dir, "notepad.txt");
+                                        readFromFile(file);
+                                    }
+                                }
                             }
                         }
-                        /* TODO */
+                        /* TODO: show instructions */
                         else {
-                            // show instructions
                         }
                     }
                     else {
@@ -271,12 +282,13 @@ public class AllNotes extends AppCompatActivity {
                         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
                     }
                     else {
-                        File f = new File(Environment.getExternalStorageDirectory(), "Notepad");
-                        if (!f.exists()) {
+                        File dir = new File(Environment.getExternalStorageDirectory(), "Notepad");
+                        if (!dir.exists()) {
                             Toast.makeText(getApplicationContext(), "File Doesn't Exist. See Instructions", Toast.LENGTH_SHORT).show();
                         }
-                        /* TODO: read file */
                         else {
+                            File file = new File(dir, "notepad.txt");
+                            readFromFile(file);
                         }
                     }
                 }
@@ -325,11 +337,42 @@ public class AllNotes extends AppCompatActivity {
                 Note n = gson.fromJson(json, Note.class);
                 pw.println(n.getTitle());
                 pw.println(n.getContent());
+                if (n.isLocked()) {
+                    pw.println("$--locked--$");
+                }
                 pw.println("$--=--$");
                 pw.flush();
             }
             pw.close();
             f.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void readFromFile(File file) {
+        final SharedPreferences.Editor prefsEditor = notesSharedPreferences.edit();
+
+        try {
+            Scanner s = new Scanner(file);
+            while (s.hasNextLine()) {
+                String title = s.nextLine();
+                String content = s.nextLine();
+                Note n = new Note(title, content);
+                if (s.nextLine().equals("$--locked--$")) {
+                    if (passwordSharedPreferences.getAll().size() > 0) {
+                        n.setLocked(true);
+                    }
+                    s.nextLine();
+                }
+                Gson gson = new Gson();
+                String json = gson.toJson(n);
+                prefsEditor.putString(n.getTitle(), json);
+                prefsEditor.apply();
+            }
+            readFromGson();
+            listView.setAdapter(notesAdapter);
         }
         catch (Exception e) {
             e.printStackTrace();
