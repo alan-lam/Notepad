@@ -14,3 +14,7 @@ APK available at the ["release"](https://github.com/alan-lam/Notepad/releases) s
 - Passing Result from Dialog to Activity
 - SharedPreferences
 - Context Menu
+
+## Resources
+https://stackoverflow.com/questions/24781213/how-to-create-a-folder-in-android-external-storage-directory
+https://stackoverflow.com/questions/8330276/write-a-file-in-external-storage-in-android

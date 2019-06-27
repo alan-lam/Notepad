@@ -7,4 +7,20 @@
         android:title="Set Password"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/export_option"
+        android:title="Export to local storage"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/import_option"
+        android:title="Import from local storage"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/instructions"
+        android:icon="@drawable/ic_info_white_24dp"
+        android:title="Instructions"
+        app:showAsAction="always" />
+
 </menu>

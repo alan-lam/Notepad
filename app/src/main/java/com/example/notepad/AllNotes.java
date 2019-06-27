@@ -1,8 +1,13 @@
 package com.example.notepad;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -14,6 +19,9 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -181,15 +189,48 @@ public class AllNotes extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (passwordSharedPreferences.getAll().size() > 0) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        /* if user has set password, then request password before performing actions */
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        else if (passwordSharedPreferences.getAll().size() > 0) {
             d.setDialogResult(new PasswordDialog.DialogResult() {
                 @Override
                 public void getResult(String result) {
                     String key = passwordSharedPreferences.getString("password", "");
                     if (key.equals(result)) {
-                        Intent i = new Intent(AllNotes.this, ChangePassword.class);
-                        startActivity(i);
+                        if (item.getTitle().equals("Set Password")) {
+                            Intent i = new Intent(AllNotes.this, ChangePassword.class);
+                            startActivity(i);
+                        }
+                        /* TODO */
+                        else if (item.getTitle().equals("Export to local storage")) {
+                            if (isExternalStorageWritable() && isExternalStorageReadable()) {
+                                /* ask user for storage write permission */
+                                if (ContextCompat.checkSelfPermission(getApplicationContext()   , Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                    ActivityCompat.requestPermissions(AllNotes.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                                }
+                                else {
+                                    File dir = new File(Environment.getExternalStorageDirectory(), "Notepad");
+                                    if (!dir.exists()) {
+                                        dir.mkdirs();
+                                    }
+                                    File file = new File(dir, "notepad.txt");
+                                    writeToFile(file);
+                                }
+                            }
+                        }
+                        /* TODO */
+                        else if (item.getTitle().equals("Import from local storage")){
+                            if (isExternalStorageReadable()) {
+                                Toast.makeText(getApplicationContext(), "Can Read", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        /* TODO */
+                        else {
+                            // show instructions
+                        }
                     }
                     else {
                         Toast.makeText(getApplicationContext(), "Wrong Password!", Toast.LENGTH_SHORT).show();
@@ -198,9 +239,51 @@ public class AllNotes extends AppCompatActivity {
             });
             d.show();
         }
+        /* if user has not set password, then perform actions without checking password */
         else {
-            Intent i = new Intent(AllNotes.this, ChangePassword.class);
-            startActivity(i);
+            if (item.getItemId() == android.R.id.home) {
+                finish();
+            }
+            else if (item.getTitle().equals("Set Password")) {
+                Intent i = new Intent(AllNotes.this, ChangePassword.class);
+                startActivity(i);
+            }
+            else if (item.getTitle().equals("Export to local storage")) {
+                if (isExternalStorageWritable() && isExternalStorageReadable()) {
+                    /* ask user for storage write permission */
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    }
+                    else {
+                        File dir = new File(Environment.getExternalStorageDirectory(), "Notepad");
+                        if (!dir.exists()) {
+                            dir.mkdirs();
+                        }
+                        File file = new File(dir, "notepad.txt");
+                        writeToFile(file);
+                    }
+                }
+            }
+            else if(item.getTitle().equals("Import from local storage")) {
+                if (isExternalStorageReadable()) {
+                    /* ask user for storage read permission */
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
+                    }
+                    else {
+                        File f = new File(Environment.getExternalStorageDirectory(), "Notepad");
+                        if (!f.exists()) {
+                            Toast.makeText(getApplicationContext(), "File Doesn't Exist. See Instructions", Toast.LENGTH_SHORT).show();
+                        }
+                        /* TODO: read file */
+                        else {
+                        }
+                    }
+                }
+            }
+            /* TODO: show instructions */
+            else {
+            }
         }
         return false;
     }
@@ -209,5 +292,47 @@ public class AllNotes extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         d.dismiss(); // Fix Activity Window Leak
+    }
+
+    /* Checks if external storage is available for read and write */
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    /* Checks if external storage is available to at least read */
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    public void writeToFile(File file) {
+        try {
+            FileOutputStream f = new FileOutputStream(file);
+            PrintWriter pw = new PrintWriter(f);
+
+            Gson gson = new Gson();
+            Map<String,?> keys = notesSharedPreferences.getAll();
+            for (Map.Entry<String,?> entry : keys.entrySet()) {
+                String json = entry.getValue().toString();
+                Note n = gson.fromJson(json, Note.class);
+                pw.println(n.getTitle());
+                pw.println(n.getContent());
+                pw.println("$--=--$");
+                pw.flush();
+            }
+            pw.close();
+            f.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
