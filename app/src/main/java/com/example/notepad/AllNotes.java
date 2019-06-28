@@ -191,11 +191,17 @@ public class AllNotes extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        /* if user has set password, then request password before performing actions */
         if (item.getItemId() == android.R.id.home) {
             finish();
+            return false;
         }
-        else if (passwordSharedPreferences.getAll().size() > 0) {
+        if (item.getTitle().equals("Instructions")) {
+            InstructionsDialog d = new InstructionsDialog(AllNotes.this);
+            d.show();
+            return false;
+        }
+        /* if user has set password, then request password before performing actions */
+        if (passwordSharedPreferences.getAll().size() > 0) {
             d.setDialogResult(new PasswordDialog.DialogResult() {
                 @Override
                 public void getResult(String result) {
@@ -230,7 +236,7 @@ public class AllNotes extends AppCompatActivity {
                                 else {
                                     File dir = new File(Environment.getExternalStorageDirectory(), "Notepad");
                                     if (!dir.exists()) {
-                                        Toast.makeText(getApplicationContext(), "File Doesn't Exist. See Instructions", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(), "Folder Doesn't Exist. See Instructions", Toast.LENGTH_SHORT).show();
                                     }
                                     else {
                                         File file = new File(dir, "notepad.txt");
@@ -238,9 +244,6 @@ public class AllNotes extends AppCompatActivity {
                                     }
                                 }
                             }
-                        }
-                        /* TODO: show instructions */
-                        else {
                         }
                     }
                     else {
@@ -252,10 +255,7 @@ public class AllNotes extends AppCompatActivity {
         }
         /* if user has not set password, then perform actions without checking password */
         else {
-            if (item.getItemId() == android.R.id.home) {
-                finish();
-            }
-            else if (item.getTitle().equals("Set Password")) {
+            if (item.getTitle().equals("Set Password")) {
                 Intent i = new Intent(AllNotes.this, ChangePassword.class);
                 startActivity(i);
             }
@@ -284,7 +284,7 @@ public class AllNotes extends AppCompatActivity {
                     else {
                         File dir = new File(Environment.getExternalStorageDirectory(), "Notepad");
                         if (!dir.exists()) {
-                            Toast.makeText(getApplicationContext(), "File Doesn't Exist. See Instructions", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "File Doesn't Exist. See InstructionsDialog", Toast.LENGTH_SHORT).show();
                         }
                         else {
                             File file = new File(dir, "notepad.txt");
@@ -292,9 +292,6 @@ public class AllNotes extends AppCompatActivity {
                         }
                     }
                 }
-            }
-            /* TODO: show instructions */
-            else {
             }
         }
         return false;
