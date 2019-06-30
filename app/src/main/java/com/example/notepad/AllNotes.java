@@ -49,7 +49,7 @@ public class AllNotes extends AppCompatActivity {
         listView = findViewById(R.id.list);
         registerForContextMenu(listView);
 
-        readFromGson();
+        readFromSharedPreferences();
         listView.setAdapter(notesAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -82,7 +82,7 @@ public class AllNotes extends AppCompatActivity {
         });
     }
 
-    private void readFromGson() {
+    private void readFromSharedPreferences() {
         notesArrayList.clear();
         Gson gson = new Gson();
         Map<String,?> keys = notesSharedPreferences.getAll();
@@ -384,7 +384,7 @@ public class AllNotes extends AppCompatActivity {
                 prefsEditor.putString(n.getTitle(), json);
                 prefsEditor.apply();
             }
-            readFromGson();
+            readFromSharedPreferences();
         }
         catch (Exception e) {
             e.printStackTrace();
