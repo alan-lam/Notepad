@@ -9,6 +9,9 @@ public class Note implements Parcelable {
     private String content;
     private boolean isLocked = false;
 
+    public Note() {
+    }
+
     public Note(String title, String content) {
         this.title = title;
         this.content = content;

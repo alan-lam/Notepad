@@ -83,6 +83,7 @@ public class AllNotes extends AppCompatActivity {
     }
 
     private void readFromGson() {
+        notesArrayList.clear();
         Gson gson = new Gson();
         Map<String,?> keys = notesSharedPreferences.getAll();
 
@@ -241,6 +242,7 @@ public class AllNotes extends AppCompatActivity {
                                     else {
                                         File file = new File(dir, "notepad.txt");
                                         readFromFile(file);
+                                        listView.setAdapter(notesAdapter);
                                     }
                                 }
                             }
@@ -289,6 +291,7 @@ public class AllNotes extends AppCompatActivity {
                         else {
                             File file = new File(dir, "notepad.txt");
                             readFromFile(file);
+                            listView.setAdapter(notesAdapter);
                         }
                     }
                 }
@@ -352,16 +355,29 @@ public class AllNotes extends AppCompatActivity {
         final SharedPreferences.Editor prefsEditor = notesSharedPreferences.edit();
 
         try {
-            Scanner s = new Scanner(file);
-            while (s.hasNextLine()) {
-                String title = s.nextLine();
-                String content = s.nextLine();
-                Note n = new Note(title, content);
-                if (s.nextLine().equals("$--locked--$")) {
-                    if (passwordSharedPreferences.getAll().size() > 0) {
-                        n.setLocked(true);
+            Scanner scanner = new Scanner(file);
+            /* read until end of file */
+            while (scanner.hasNextLine()) {
+                Note n = new Note();
+                String title = scanner.nextLine();
+                n.setTitle(title);
+                StringBuilder content = new StringBuilder();
+                String s = scanner.nextLine();
+                /* read until delimiter, then generate note (handle newlines in notes) */
+                while (!s.equals("$--=--$")) {
+                    if (s.equals("$--locked--$")) {
+                        if (passwordSharedPreferences.getAll().size() > 0) {
+                            n.setLocked(true);
+                        }
                     }
-                    s.nextLine();
+                    else {
+                        content.append(s);
+                        n.setContent(content.toString());
+                    }
+                    s = scanner.nextLine();
+                    if (!s.equals("$--=--$")) {
+                        content.append("\n");
+                    }
                 }
                 Gson gson = new Gson();
                 String json = gson.toJson(n);
@@ -369,7 +385,6 @@ public class AllNotes extends AppCompatActivity {
                 prefsEditor.apply();
             }
             readFromGson();
-            listView.setAdapter(notesAdapter);
         }
         catch (Exception e) {
             e.printStackTrace();
