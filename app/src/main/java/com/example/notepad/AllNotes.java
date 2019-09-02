@@ -225,6 +225,7 @@ public class AllNotes extends AppCompatActivity {
                                     }
                                     File file = new File(dir, "notepad.txt");
                                     writeToFile(file);
+                                    Toast.makeText(getApplicationContext(), "Exported", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -243,6 +244,7 @@ public class AllNotes extends AppCompatActivity {
                                         File file = new File(dir, "notepad.txt");
                                         readFromFile(file);
                                         listView.setAdapter(notesAdapter);
+                                        Toast.makeText(getApplicationContext(), "Imported", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             }
@@ -274,6 +276,7 @@ public class AllNotes extends AppCompatActivity {
                         }
                         File file = new File(dir, "notepad.txt");
                         writeToFile(file);
+                        Toast.makeText(getApplicationContext(), "Exported", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -292,6 +295,7 @@ public class AllNotes extends AppCompatActivity {
                             File file = new File(dir, "notepad.txt");
                             readFromFile(file);
                             listView.setAdapter(notesAdapter);
+                            Toast.makeText(getApplicationContext(), "Imported", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
