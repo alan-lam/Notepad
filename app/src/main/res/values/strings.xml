@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Notepad</string>
-    <string name="instructions"><big><b>Exporting</b>: A new folder named <b>\"Notepad\"</b> will be created at the path /sdcard. Inside the \"Notepad\" folder, a new file named <b>\"notepad.txt\"</b> will be created with the title and contents of every note.\n<b>Importing</b>: Make sure a folder named <b>\"Notepad\"</b> exists at the path /sdcard. Also make sure that a file named <b>\"notepad.txt\"</b> exists inside that folder.</big></string>
+    <string name="instructions"><big><b>Exporting</b>: A new folder named <b>\"Notepad\"</b> will be created at the path /sdcard. Inside the \"Notepad\" folder, a new file named <b>\"notepad.txt\"</b> will be created with the title and contents of every note.\n\n<b>Importing</b>: Make sure a folder named <b>\"Notepad\"</b> exists at the path /sdcard. Also make sure that a file named <b>\"notepad.txt\"</b> exists inside that folder.\n\n<b>Note: Set a password before importing so notes that should be locked are actually locked.</b></big></string>
 </resources>
