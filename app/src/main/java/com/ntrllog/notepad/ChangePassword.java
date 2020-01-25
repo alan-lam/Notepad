@@ -1,4 +1,4 @@
-package com.example.notepad;
+package com.ntrllog.notepad;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

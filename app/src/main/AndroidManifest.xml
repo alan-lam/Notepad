@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.notepad">
+    package="com.ntrllog.notepad">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.ntrllog.notepad.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,14 +20,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AllNotes"
+            android:name="com.ntrllog.notepad.AllNotes"
             android:label="All Notes"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName="com.ntrllog.notepad.MainActivity">
         </activity>
         <activity
-            android:name=".ChangePassword"
+            android:name="com.ntrllog.notepad.ChangePassword"
             android:label="Change Password"
-            android:parentActivityName=".AllNotes">
+            android:parentActivityName="com.ntrllog.notepad.AllNotes">
 
         </activity>
     </application>

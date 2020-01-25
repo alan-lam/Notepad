@@ -1,4 +1,4 @@
-package com.example.notepad;
+package com.ntrllog.notepad;
 
 import android.app.Activity;
 import android.view.LayoutInflater;

@@ -1,4 +1,4 @@
-package com.example.notepad;
+package com.ntrllog.notepad;
 
 import org.junit.Test;
 
