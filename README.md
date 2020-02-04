@@ -2,7 +2,7 @@
 
 An Android app of a simple text editor
 
-APK available at the ["release"](https://github.com/alan-lam/Notepad/releases) section
+App available on [Google Play Store](https://play.google.com/store/apps/details?id=com.ntrllog.notepad)
 
 ## Screenshots
 ![Alt text](/pictures/main.jpg?raw=true)
